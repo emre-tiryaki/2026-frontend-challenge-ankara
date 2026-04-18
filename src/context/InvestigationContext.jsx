@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback } from "react";
 import { InvestigationContext } from "./investigationContextObject";
 import { fileStorageService } from "../services/fileStorageService";
+import { finalVerdictService } from "../services/finalVerdictService";
 
 const EVENT_TYPE_OPTIONS = [
     { value: "checkin", label: "📍 Check-in'ler" },
@@ -86,6 +87,11 @@ export function InvestigationProvider({ initialEvents, children }) {
         fileStorageService.getAllFiles(),
     );
     const [openCanvasFileId, setOpenCanvasFileId] = useState(null);
+    const [finalVerdict, setFinalVerdict] = useState(() =>
+        finalVerdictService.getFinalVerdict(),
+    );
+    const [isFinalVerdictModalOpen, setIsFinalVerdictModalOpen] =
+        useState(false);
 
     const selectedPeople = useMemo(() => {
         if (selectedPeopleState === null) return peopleOptions;
@@ -269,6 +275,26 @@ export function InvestigationProvider({ initialEvents, children }) {
         setOpenCanvasFileId(null);
     }, []);
 
+    const openFinalVerdictModal = useCallback(() => {
+        setIsFinalVerdictModalOpen(true);
+    }, []);
+
+    const closeFinalVerdictModal = useCallback(() => {
+        setIsFinalVerdictModalOpen(false);
+    }, []);
+
+    const saveFinalVerdict = useCallback((verdict) => {
+        const savedVerdict = finalVerdictService.saveFinalVerdict(verdict);
+        setFinalVerdict(savedVerdict);
+        setIsFinalVerdictModalOpen(false);
+        return savedVerdict;
+    }, []);
+
+    const clearFinalVerdict = useCallback(() => {
+        finalVerdictService.clearFinalVerdict();
+        setFinalVerdict(null);
+    }, []);
+
     const value = {
         caseTitle: "Ankara 18 Nisan: Case #2610",
         allEvents,
@@ -292,6 +318,8 @@ export function InvestigationProvider({ initialEvents, children }) {
         allFiles,
         currentFile,
         openCanvasFileId,
+        finalVerdict,
+        isFinalVerdictModalOpen,
         createNewFile,
         renameFile,
         deleteFile,
@@ -303,6 +331,10 @@ export function InvestigationProvider({ initialEvents, children }) {
         updateConnectionLabel,
         openCanvas,
         closeCanvas,
+        openFinalVerdictModal,
+        closeFinalVerdictModal,
+        saveFinalVerdict,
+        clearFinalVerdict,
     };
 
     return (

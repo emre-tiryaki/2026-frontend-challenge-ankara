@@ -25,6 +25,8 @@ export default function DashboardHeader() {
         setSelectedPeople,
         setSelectedTypes,
         setTimeRange,
+        finalVerdict,
+        openFinalVerdictModal,
     } = useInvestigation();
 
     const [openMenu, setOpenMenu] = useState(null);
@@ -108,12 +110,22 @@ export default function DashboardHeader() {
                     </div>
                 </div>
 
-                <button
-                    type="button"
-                    className="hidden h-9 min-w-24 rounded-lg border border-slate-700 bg-slate-800 px-3 text-xs font-medium text-slate-200 hover:bg-slate-700 md:block"
-                >
-                    Sıfırla
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={openFinalVerdictModal}
+                        className="hidden h-9 rounded-lg border border-amber-500/40 bg-amber-500/15 px-3 text-xs font-medium text-amber-100 hover:bg-amber-500/25 md:block"
+                    >
+                        {finalVerdict ? "Teoriyi Güncelle" : "Katil Bul"}
+                    </button>
+
+                    <button
+                        type="button"
+                        className="hidden h-9 min-w-24 rounded-lg border border-slate-700 bg-slate-800 px-3 text-xs font-medium text-slate-200 hover:bg-slate-700 md:block"
+                    >
+                        Sıfırla
+                    </button>
+                </div>
 
                 <button
                     type="button"
@@ -276,6 +288,14 @@ export default function DashboardHeader() {
                         />
                     </div>
                 </div>
+
+                <button
+                    type="button"
+                    onClick={openFinalVerdictModal}
+                    className="h-10 rounded-lg border border-amber-500/40 bg-amber-500/15 px-3 text-xs font-medium text-amber-100 hover:bg-amber-500/25 md:hidden"
+                >
+                    {finalVerdict ? "Teoriyi Güncelle" : "Suçluyu Bul"}
+                </button>
 
                 <button
                     type="button"

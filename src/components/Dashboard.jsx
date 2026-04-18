@@ -3,6 +3,7 @@ import DashboardHeader from "./DashboardHeader";
 import DataPanel from "./DataPanel";
 import MapPanel from "./MapPanel";
 import EventDetailModal from "./EventDetailModal";
+import FinalVerdictModal from "./FinalVerdictModal";
 import FilesDrawer from "./FilesDrawer";
 import CanvasPanel from "./CanvasPanel";
 import { storageService } from "../services/storageService";
@@ -288,6 +289,7 @@ export default function Dashboard({ timeline }) {
                     </section>
 
                     <EventDetailModal />
+                    <FinalVerdictModal />
                     <FilesDrawer />
                     <CanvasPanel />
                 </div>
