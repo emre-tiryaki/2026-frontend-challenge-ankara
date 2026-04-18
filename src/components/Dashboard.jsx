@@ -3,6 +3,7 @@ import DashboardHeader from "./DashboardHeader";
 import DataPanel from "./DataPanel";
 import MapPanel from "./MapPanel";
 import { storageService } from "../services/storageService";
+import { InvestigationProvider } from "../context/InvestigationContext";
 
 const MIN_PANEL_WIDTH = 320;
 
@@ -112,116 +113,117 @@ export default function Dashboard({ timeline }) {
         isDataOpen && isMapOpen ? clampSplitByMinWidth(split) : split;
 
     return (
-        <main
-            style={{
-                padding: 12,
-                height: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                overflow: "hidden",
-                boxSizing: "border-box",
-            }}
-        >
-            <DashboardHeader timelineCount={timeline.length} />
-
-            <section
-                ref={contentRef}
+        <InvestigationProvider initialEvents={timeline}>
+            <main
                 style={{
+                    padding: 12,
+                    height: "100vh",
                     display: "flex",
-                    flex: 1,
-                    width: "100%",
-                    minHeight: 0,
-                    position: "relative",
+                    flexDirection: "column",
                     overflow: "hidden",
+                    boxSizing: "border-box",
+                    gap: 12,
+                    background: "#f6f7fb",
                 }}
             >
-                {!isDataOpen && (
-                    <button
-                        onClick={() => togglePanel("data")}
-                        aria-label="Veri panelini ac"
-                        style={{
-                            position: "absolute",
-                            left: 4,
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            width: 28,
-                            height: 48,
-                            zIndex: 2,
-                        }}
-                    >
-                        {">"}
-                    </button>
-                )}
+                <DashboardHeader />
 
-                {isDataOpen && (
-                    <div
-                        style={{
-                            flex: isMapOpen
-                                ? `0 0 ${effectiveSplit}%`
-                                : "1 1 auto",
-                            minWidth: isMapOpen ? MIN_PANEL_WIDTH : 0,
-                            height: "100%",
-                            overflow: "hidden",
-                            paddingRight: isMapOpen ? 4 : 0,
-                        }}
-                    >
-                        <DataPanel
-                            timeline={timeline}
-                            onClose={() => togglePanel("data")}
+                <section
+                    ref={contentRef}
+                    style={{
+                        display: "flex",
+                        flex: 1,
+                        width: "100%",
+                        minHeight: 0,
+                        position: "relative",
+                        overflow: "hidden",
+                    }}
+                >
+                    {!isDataOpen && (
+                        <button
+                            onClick={() => togglePanel("data")}
+                            aria-label="Veri panelini ac"
+                            style={{
+                                position: "absolute",
+                                left: 4,
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                width: 28,
+                                height: 48,
+                                zIndex: 2,
+                            }}
+                        >
+                            {">"}
+                        </button>
+                    )}
+
+                    {isDataOpen && (
+                        <div
+                            style={{
+                                flex: isMapOpen
+                                    ? `0 0 ${effectiveSplit}%`
+                                    : "1 1 auto",
+                                minWidth: isMapOpen ? MIN_PANEL_WIDTH : 0,
+                                height: "100%",
+                                overflow: "hidden",
+                                paddingRight: isMapOpen ? 4 : 0,
+                            }}
+                        >
+                            <DataPanel onClose={() => togglePanel("data")} />
+                        </div>
+                    )}
+
+                    {isDataOpen && isMapOpen && (
+                        <div
+                            onMouseDown={() => setIsResizing(true)}
+                            role="separator"
+                            aria-label="Panel ayirici"
+                            style={{
+                                width: 8,
+                                cursor: "col-resize",
+                                background: isResizing ? "#d7d7d7" : "#ececec",
+                                borderRadius: 6,
+                                margin: "0 2px",
+                                flex: "0 0 8px",
+                            }}
                         />
-                    </div>
-                )}
+                    )}
 
-                {isDataOpen && isMapOpen && (
-                    <div
-                        onMouseDown={() => setIsResizing(true)}
-                        role="separator"
-                        aria-label="Panel ayirici"
-                        style={{
-                            width: 8,
-                            cursor: "col-resize",
-                            background: isResizing ? "#d7d7d7" : "#ececec",
-                            borderRadius: 6,
-                            margin: "0 2px",
-                            flex: "0 0 8px",
-                        }}
-                    />
-                )}
+                    {isMapOpen && (
+                        <div
+                            style={{
+                                flex: isDataOpen
+                                    ? `0 0 ${100 - effectiveSplit}%`
+                                    : "1 1 auto",
+                                minWidth: isDataOpen ? MIN_PANEL_WIDTH : 0,
+                                height: "100%",
+                                overflow: "hidden",
+                                paddingLeft: isDataOpen ? 4 : 0,
+                            }}
+                        >
+                            <MapPanel onClose={() => togglePanel("map")} />
+                        </div>
+                    )}
 
-                {isMapOpen && (
-                    <div
-                        style={{
-                            flex: isDataOpen
-                                ? `0 0 ${100 - effectiveSplit}%`
-                                : "1 1 auto",
-                            minWidth: isDataOpen ? MIN_PANEL_WIDTH : 0,
-                            height: "100%",
-                            overflow: "hidden",
-                            paddingLeft: isDataOpen ? 4 : 0,
-                        }}
-                    >
-                        <MapPanel onClose={() => togglePanel("map")} />
-                    </div>
-                )}
-
-                {!isMapOpen && (
-                    <button
-                        onClick={() => togglePanel("map")}
-                        aria-label="Harita panelini ac"
-                        style={{
-                            position: "absolute",
-                            right: 4,
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            width: 28,
-                            height: 48,
-                            zIndex: 2,
-                        }}
-                    >
-                        {"<"}
-                    </button>
-                )}
-            </section>
-        </main>
+                    {!isMapOpen && (
+                        <button
+                            onClick={() => togglePanel("map")}
+                            aria-label="Harita panelini ac"
+                            style={{
+                                position: "absolute",
+                                right: 4,
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                width: 28,
+                                height: 48,
+                                zIndex: 2,
+                            }}
+                        >
+                            {"<"}
+                        </button>
+                    )}
+                </section>
+            </main>
+        </InvestigationProvider>
     );
 }

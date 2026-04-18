@@ -1,4 +1,8 @@
+import { useInvestigation } from "../context/useInvestigation";
+
 export default function MapPanel({ onClose }) {
+    const { filteredEvents } = useInvestigation();
+
     return (
         <section
             style={{
@@ -30,6 +34,7 @@ export default function MapPanel({ onClose }) {
             <div>
                 <h2 style={{ marginTop: 0 }}>Harita Kismi</h2>
                 <p>Harita bileşeni daha sonra eklenecek.</p>
+                <p>Haritada gösterilecek kayıt: {filteredEvents.length}</p>
             </div>
         </section>
     );

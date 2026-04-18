@@ -1,5 +1,8 @@
-export default function DataPanel({ timeline, onClose }) {
-    const previewItems = timeline.slice(0, 6);
+import { useInvestigation } from "../context/useInvestigation";
+
+export default function DataPanel({ onClose }) {
+    const { filteredEvents } = useInvestigation();
+    const previewItems = filteredEvents.slice(0, 8);
 
     return (
         <section
@@ -27,7 +30,9 @@ export default function DataPanel({ timeline, onClose }) {
             </button>
 
             <h2 style={{ marginTop: 0 }}>Veri Kismi</h2>
-            <p style={{ marginTop: 0 }}>Toplam olay: {timeline.length}</p>
+            <p style={{ marginTop: 0 }}>
+                Filtrelenmiş olay: {filteredEvents.length}
+            </p>
 
             {previewItems.length === 0 ? (
                 <p>Gosterilecek veri yok.</p>
