@@ -1,8 +1,10 @@
+import DataInspector from "./components/DataInspector"
+
 function App() {
  
   return (
     <>
-      <h1>hello world</h1>
+      <DataInspector />
     </>
   )
 }

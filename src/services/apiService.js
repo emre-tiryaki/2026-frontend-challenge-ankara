@@ -41,22 +41,21 @@ class JotformService {
             );
         }
 
-        const url = `${this.baseUrl}${endpoint}`;
         const activeKey = this.getCurrentKey();
 
-        try {
-            const response = await fetch(url, {
-                ...options,
-                headers: {
-                    ...options.headers,
-                    APIKEY: activeKey, // Jotform API kimlik doğrulamasını header'dan alır
-                },
-            });
+        // API Key'i Header yerine URL parametresi olarak ekliyoruz.
+        // Eğer endpoint'te zaten bir '?' varsa '&' ile, yoksa '?' ile ekliyoruz.
+        const separator = endpoint.includes("?") ? "&" : "?";
+        const url = `${this.baseUrl}${endpoint}${separator}apiKey=${activeKey}`;
 
-            // API Limiti (429) veya Yetki Hatası (401) durumunda Fallback stratejisini çalıştır
+        try {
+            // Artık headers içine APIKEY koymamıza gerek yok
+            const response = await fetch(url, options);
+
+            // ... Kodun geri kalanı aynı kalacak (429/401 kontrolleri vs.)
             if (response.status === 429 || response.status === 401) {
                 this.rotateKey();
-                return this.request(endpoint, options, retriesLeft - 1); // Yeni key ile isteği tekrarla (Recursive)
+                return this.request(endpoint, options, retriesLeft - 1);
             }
 
             if (!response.ok) {
@@ -67,7 +66,6 @@ class JotformService {
 
             const responseData = await response.json();
 
-            // Jotform API başarılı yanıtlarda veriyi 'content' objesi içinde döner
             if (responseData.responseCode === 200) {
                 return responseData.content;
             } else {
