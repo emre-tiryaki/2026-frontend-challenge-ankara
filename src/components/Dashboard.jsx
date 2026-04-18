@@ -2,6 +2,7 @@ import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import DashboardHeader from "./DashboardHeader";
 import DataPanel from "./DataPanel";
 import MapPanel from "./MapPanel";
+import EventDetailModal from "./EventDetailModal";
 import { storageService } from "../services/storageService";
 import { InvestigationProvider } from "../context/InvestigationContext";
 
@@ -223,6 +224,8 @@ export default function Dashboard({ timeline }) {
                         </button>
                     )}
                 </section>
+
+                <EventDetailModal />
             </main>
         </InvestigationProvider>
     );

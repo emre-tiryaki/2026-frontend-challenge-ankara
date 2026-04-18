@@ -14,3 +14,44 @@ body {
 * {
     box-sizing: border-box;
 }
+
+.event-pin-wrapper {
+    background: transparent;
+    border: 0;
+}
+
+.event-pin {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+    border: 2px solid rgba(255, 255, 255, 0.85);
+}
+
+.event-pin--active {
+    animation: pinPulse 1.2s ease-in-out infinite;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 10px;
+}
+
+.leaflet-popup-content {
+    margin: 10px;
+}
+
+@keyframes pinPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.16);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

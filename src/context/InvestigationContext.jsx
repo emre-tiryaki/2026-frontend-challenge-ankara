@@ -43,6 +43,8 @@ const getEventTimestamp = (event) => {
     return null;
 };
 
+const getEventKey = (event) => `${event.type}-${event.id}`;
+
 export function InvestigationProvider({ initialEvents, children }) {
     const allEvents = initialEvents;
 
@@ -77,6 +79,8 @@ export function InvestigationProvider({ initialEvents, children }) {
     const [selectedPeopleState, setSelectedPeopleState] = useState(null);
     const [selectedTypesState, setSelectedTypesState] = useState(null);
     const [timeRangeState, setTimeRangeState] = useState(null);
+    const [focusedEventKey, setFocusedEventKey] = useState(null);
+    const [modalEventKey, setModalEventKey] = useState(null);
 
     const selectedPeople = useMemo(() => {
         if (selectedPeopleState === null) return peopleOptions;
@@ -169,10 +173,37 @@ export function InvestigationProvider({ initialEvents, children }) {
         });
     }, [allEvents, selectedPeople, selectedTypes, timeRange]);
 
+    const filteredEventsWithCoordinates = useMemo(() => {
+        return filteredEvents.filter((event) => {
+            const lat = Number(event.lat);
+            const lng = Number(event.lng);
+
+            return Number.isFinite(lat) && Number.isFinite(lng);
+        });
+    }, [filteredEvents]);
+
+    const modalEvent = useMemo(() => {
+        if (!modalEventKey) return null;
+        return (
+            allEvents.find((event) => getEventKey(event) === modalEventKey) ||
+            null
+        );
+    }, [allEvents, modalEventKey]);
+
+    const openEventDetails = (eventKey) => {
+        setModalEventKey(eventKey);
+        setFocusedEventKey(eventKey);
+    };
+
+    const closeEventDetails = () => {
+        setModalEventKey(null);
+    };
+
     const value = {
         caseTitle: "Ankara 18 Nisan: Case #2610",
         allEvents,
         filteredEvents,
+        filteredEventsWithCoordinates,
         peopleOptions,
         typeOptions: availableTypeValues,
         selectedPeople,
@@ -182,6 +213,12 @@ export function InvestigationProvider({ initialEvents, children }) {
         setSelectedPeople,
         setSelectedTypes,
         setTimeRange,
+        focusedEventKey,
+        setFocusedEventKey,
+        modalEvent,
+        openEventDetails,
+        closeEventDetails,
+        getEventKey,
     };
 
     return (
