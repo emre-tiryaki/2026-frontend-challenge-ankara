@@ -7,17 +7,37 @@ const TYPE_META = {
         icon: "📍",
         label: "Check-in",
         border: "#2ea44f",
-        bg: "#f2fff6",
+        bg: "#0f2c1d",
+        text: "#d8ffe8",
     },
-    message: { icon: "✉️", label: "Mesaj", border: "#1f6feb", bg: "#f2f8ff" },
+    message: {
+        icon: "✉️",
+        label: "Mesaj",
+        border: "#1f6feb",
+        bg: "#10243d",
+        text: "#deebff",
+    },
     sighting: {
         icon: "👀",
         label: "Görülme",
         border: "#e67e22",
-        bg: "#fff7ef",
+        bg: "#3a220f",
+        text: "#ffe7cf",
     },
-    note: { icon: "📝", label: "Not", border: "#8e44ad", bg: "#fbf4ff" },
-    tip: { icon: "🕵️", label: "İhbar", border: "#c0392b", bg: "#fff3f2" },
+    note: {
+        icon: "📝",
+        label: "Not",
+        border: "#8e44ad",
+        bg: "#2b1336",
+        text: "#efd8ff",
+    },
+    tip: {
+        icon: "🕵️",
+        label: "İhbar",
+        border: "#c0392b",
+        bg: "#3c1513",
+        text: "#ffd9d6",
+    },
 };
 
 function renderEventDetail(event) {
@@ -115,55 +135,42 @@ export default function EventDetailModal() {
         <div
             role="dialog"
             aria-modal="true"
-            style={{
-                position: "fixed",
-                inset: 0,
-                background: "rgba(9, 13, 24, 0.48)",
-                display: "grid",
-                placeItems: "center",
-                padding: 16,
-                zIndex: 5000,
-            }}
+            className="fixed inset-0 z-[5000] grid place-items-center bg-slate-950/70 p-4"
             onClick={closeEventDetails}
         >
             <div
                 onClick={(event) => event.stopPropagation()}
-                style={{
-                    width: "min(640px, 96vw)",
-                    borderRadius: 12,
-                    border: `2px solid ${modalMeta.border}`,
-                    background: "#fff",
-                    overflow: "hidden",
-                }}
+                className="w-[min(680px,96vw)] overflow-hidden rounded-2xl border-2 bg-slate-900 text-slate-100"
+                style={{ borderColor: modalMeta.border }}
             >
                 <div
+                    className="flex items-center justify-between border-b px-4 py-3"
                     style={{
-                        padding: "10px 14px",
                         background: modalMeta.bg,
-                        borderBottom: `1px solid ${modalMeta.border}`,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
+                        borderColor: modalMeta.border,
                     }}
                 >
-                    <strong>
+                    <strong
+                        className="text-sm md:text-base"
+                        style={{ color: modalMeta.text }}
+                    >
                         {modalMeta.icon} {modalMeta.label} Detayı
                     </strong>
                     <button
                         type="button"
                         onClick={closeEventDetails}
-                        style={{ width: 28, height: 28 }}
+                        className="grid h-8 w-8 place-items-center rounded-md border border-slate-600 bg-slate-800 text-slate-200 hover:bg-slate-700"
                     >
                         ✕
                     </button>
                 </div>
 
-                <div style={{ padding: 14 }}>
-                    <p>
+                <div className="space-y-2 p-4 text-sm leading-6 text-slate-200 md:text-[15px]">
+                    <p className="m-0">
                         <strong>Zaman:</strong>{" "}
                         {modalEvent.timestampString || "-"}
                     </p>
-                    <p>
+                    <p className="m-0">
                         <strong>Konum:</strong> {modalEvent.location || "-"}
                     </p>
                     {renderEventDetail(modalEvent)}

@@ -5,32 +5,17 @@ const TYPE_META = {
         icon: "📍",
         label: "Check-in",
         border: "#2ea44f",
-        bg: "#f2fff6",
+        bg: "#103422",
     },
-    message: {
-        icon: "✉️",
-        label: "Mesaj",
-        border: "#1f6feb",
-        bg: "#f2f8ff",
-    },
+    message: { icon: "✉️", label: "Mesaj", border: "#1f6feb", bg: "#10253f" },
     sighting: {
         icon: "👀",
         label: "Görülme",
         border: "#e67e22",
-        bg: "#fff7ef",
+        bg: "#3a2310",
     },
-    note: {
-        icon: "📝",
-        label: "Not",
-        border: "#8e44ad",
-        bg: "#fbf4ff",
-    },
-    tip: {
-        icon: "🕵️",
-        label: "İhbar",
-        border: "#c0392b",
-        bg: "#fff3f2",
-    },
+    note: { icon: "📝", label: "Not", border: "#8e44ad", bg: "#2a1335" },
+    tip: { icon: "🕵️", label: "İhbar", border: "#c0392b", bg: "#3e1714" },
 };
 
 function getEventTitle(event) {
@@ -77,47 +62,26 @@ export default function DataPanel({ onClose }) {
     } = useInvestigation();
 
     return (
-        <section
-            style={{
-                border: "1px solid #ddd",
-                borderRadius: 8,
-                padding: 12,
-                height: "100%",
-                overflow: "auto",
-                position: "relative",
-                background: "#ffffff",
-            }}
-        >
+        <section className="relative h-full overflow-auto rounded-2xl border border-slate-800 bg-slate-900 p-3 text-slate-100">
             <button
                 onClick={onClose}
                 aria-label="Veri panelini kapat"
-                style={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    width: 28,
-                    height: 28,
-                }}
+                className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700"
             >
                 ✕
             </button>
 
-            <h2 style={{ marginTop: 0, marginBottom: 6 }}>Veri Kısmı</h2>
-            <p style={{ marginTop: 0, color: "#5b6475" }}>
+            <h2 className="mb-1 mt-0 pr-10 text-lg font-semibold">
+                Delil Kartları
+            </h2>
+            <p className="mt-0 text-sm text-slate-400">
                 Filtrelenmiş olay: {filteredEvents.length}
             </p>
 
             {filteredEvents.length === 0 ? (
-                <p>Gösterilecek veri yok.</p>
+                <p className="text-sm text-slate-400">Gösterilecek veri yok.</p>
             ) : (
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns:
-                            "repeat(auto-fill, minmax(220px, 1fr))",
-                        gap: 10,
-                    }}
-                >
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-2.5">
                     {filteredEvents.map((event) => {
                         const eventKey = getEventKey(event);
                         const meta = TYPE_META[event.type] || TYPE_META.note;
@@ -130,73 +94,40 @@ export default function DataPanel({ onClose }) {
                                     setFocusedEventKey(eventKey);
                                     openEventDetails(eventKey);
                                 }}
+                                className="rounded-xl border px-3 py-2 text-left transition hover:-translate-y-0.5"
                                 style={{
-                                    textAlign: "left",
-                                    border:
+                                    borderColor:
                                         focusedEventKey === eventKey
-                                            ? `2px solid ${meta.border}`
-                                            : `1px solid ${meta.border}`,
+                                            ? meta.border
+                                            : `${meta.border}99`,
                                     boxShadow:
                                         focusedEventKey === eventKey
-                                            ? `0 0 0 2px ${meta.bg}`
+                                            ? `0 0 0 2px ${meta.border}33`
                                             : "none",
-                                    borderRadius: 10,
-                                    background: meta.bg,
-                                    padding: 10,
-                                    cursor: "pointer",
-                                    minHeight: 132,
+                                    background:
+                                        focusedEventKey === eventKey
+                                            ? `linear-gradient(180deg, ${meta.bg} 0%, #0f172a 100%)`
+                                            : `linear-gradient(180deg, ${meta.bg}cc 0%, #0b1220 100%)`,
                                 }}
                             >
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        gap: 8,
-                                        marginBottom: 8,
-                                    }}
-                                >
-                                    <strong>
+                                <div className="mb-2 flex items-start justify-between gap-2">
+                                    <strong className="text-sm text-slate-100">
                                         {meta.icon} {meta.label}
                                     </strong>
-                                    <span
-                                        style={{
-                                            color: "#6c7386",
-                                            fontSize: 12,
-                                        }}
-                                    >
+                                    <span className="text-[11px] text-slate-400">
                                         {event.timestampString || "-"}
                                     </span>
                                 </div>
 
-                                <div
-                                    style={{
-                                        fontWeight: 600,
-                                        marginBottom: 6,
-                                        color: "#1f2430",
-                                    }}
-                                >
+                                <div className="mb-1.5 text-sm font-semibold text-slate-100">
                                     {getEventTitle(event)}
                                 </div>
 
-                                <p
-                                    style={{
-                                        margin: 0,
-                                        color: "#444a58",
-                                        fontSize: 13,
-                                        lineHeight: 1.35,
-                                    }}
-                                >
+                                <p className="m-0 text-xs leading-5 text-slate-300">
                                     {getEventSummary(event)}
                                 </p>
 
-                                <p
-                                    style={{
-                                        marginTop: 8,
-                                        marginBottom: 0,
-                                        fontSize: 12,
-                                        color: "#5b6475",
-                                    }}
-                                >
+                                <p className="mb-0 mt-2 text-[11px] text-slate-400">
                                     📌 {event.location || "Bilinmiyor"}
                                 </p>
                             </button>

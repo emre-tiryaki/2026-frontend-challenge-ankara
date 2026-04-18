@@ -102,45 +102,23 @@ export default function MapPanel({ onClose }) {
     }, [filteredEventsWithCoordinates, getEventKey]);
 
     return (
-        <section
-            style={{
-                border: "1px solid #ddd",
-                borderRadius: 8,
-                padding: 12,
-                height: "100%",
-                background: "#10141f",
-                position: "relative",
-                overflow: "hidden",
-            }}
-        >
+        <section className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-3">
             <button
                 onClick={onClose}
                 aria-label="Harita panelini kapat"
-                style={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    width: 28,
-                    height: 28,
-                }}
+                className="absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700"
             >
                 ✕
             </button>
 
-            <h2 style={{ marginTop: 0, marginBottom: 8, color: "#f5f8ff" }}>
+            <h2 className="mb-1 mt-0 pr-10 text-lg font-semibold text-slate-100">
                 Harita Kısmı
             </h2>
-            <p style={{ marginTop: 0, marginBottom: 10, color: "#a9b1c7" }}>
+            <p className="mb-2 mt-0 text-sm text-slate-400">
                 Haritada gösterilecek kayıt: {mapEvents.length}
             </p>
 
-            <div
-                style={{
-                    height: "calc(100% - 64px)",
-                    borderRadius: 10,
-                    overflow: "hidden",
-                }}
-            >
+            <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-slate-700">
                 <MapContainer
                     center={DEFAULT_CENTER}
                     zoom={DEFAULT_ZOOM}
@@ -175,22 +153,11 @@ export default function MapPanel({ onClose }) {
                                 }}
                             >
                                 <Popup>
-                                    <div style={{ minWidth: 220 }}>
-                                        <div
-                                            style={{
-                                                fontSize: 13,
-                                                color: "#697089",
-                                                marginBottom: 6,
-                                            }}
-                                        >
+                                    <div className="min-w-[220px]">
+                                        <div className="mb-1.5 text-xs text-slate-500">
                                             🕒 {event.timestampString || "-"}
                                         </div>
-                                        <div
-                                            style={{
-                                                marginBottom: 8,
-                                                fontWeight: 600,
-                                            }}
-                                        >
+                                        <div className="mb-2 text-sm font-semibold text-slate-800">
                                             {markerStyle.icon}{" "}
                                             {getPopupTitle(event)}
                                         </div>
@@ -199,7 +166,7 @@ export default function MapPanel({ onClose }) {
                                             onClick={() =>
                                                 openEventDetails(event.eventKey)
                                             }
-                                            style={{ width: "100%" }}
+                                            className="w-full rounded-md border border-slate-300 bg-slate-100 py-1 text-xs font-medium text-slate-700 hover:bg-white"
                                         >
                                             Detayı İncele
                                         </button>

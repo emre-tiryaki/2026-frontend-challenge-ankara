@@ -9,6 +9,18 @@ import { InvestigationProvider } from "../context/InvestigationContext";
 const MIN_PANEL_WIDTH = 320;
 
 function panelReducer(state, action) {
+    if (action.type === "showOnly") {
+        if (action.panel === "data") {
+            return { isDataOpen: true, isMapOpen: false };
+        }
+
+        if (action.panel === "map") {
+            return { isDataOpen: false, isMapOpen: true };
+        }
+
+        return state;
+    }
+
     if (action.type !== "toggle") return state;
 
     if (action.panel === "data") {
@@ -40,6 +52,11 @@ export default function Dashboard({ timeline }) {
     const [split, setSplit] = useState(initialLayout.split);
     const [isResizing, setIsResizing] = useState(false);
     const [contentWidth, setContentWidth] = useState(0);
+    const [isMobile, setIsMobile] = useState(() => {
+        if (typeof window === "undefined") return false;
+        return window.matchMedia("(max-width: 767px)").matches;
+    });
+    const [mobileActivePanel, setMobileActivePanel] = useState("data");
     const contentRef = useRef(null);
 
     useEffect(() => {
@@ -66,6 +83,32 @@ export default function Dashboard({ timeline }) {
     const togglePanel = (panel) => {
         dispatchPanel({ type: "toggle", panel });
     };
+
+    const showOnlyPanel = (panel) => {
+        dispatchPanel({ type: "showOnly", panel });
+    };
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const media = window.matchMedia("(max-width: 767px)");
+        const onChange = (event) => setIsMobile(event.matches);
+        media.addEventListener("change", onChange);
+
+        return () => {
+            media.removeEventListener("change", onChange);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!isMobile) return;
+
+        if (mobileActivePanel === "data") {
+            showOnlyPanel("data");
+        } else {
+            showOnlyPanel("map");
+        }
+    }, [isMobile, mobileActivePanel]);
 
     useEffect(() => {
         if (!(isResizing && isDataOpen && isMapOpen)) return;
@@ -113,119 +156,137 @@ export default function Dashboard({ timeline }) {
     const effectiveSplit =
         isDataOpen && isMapOpen ? clampSplitByMinWidth(split) : split;
 
+    const shouldShowData = isMobile ? mobileActivePanel === "data" : isDataOpen;
+    const shouldShowMap = isMobile ? mobileActivePanel === "map" : isMapOpen;
+
+    const switchMobilePanel = () => {
+        setMobileActivePanel((prev) => (prev === "data" ? "map" : "data"));
+    };
+
     return (
         <InvestigationProvider initialEvents={timeline}>
-            <main
-                style={{
-                    padding: 12,
-                    height: "100vh",
-                    display: "flex",
-                    flexDirection: "column",
-                    overflow: "hidden",
-                    boxSizing: "border-box",
-                    gap: 12,
-                    background: "#f6f7fb",
-                }}
-            >
-                <DashboardHeader />
+            <main className="h-screen overflow-hidden bg-slate-950 p-2 text-slate-100 md:p-3">
+                <div className="flex h-full flex-col gap-2 md:gap-3">
+                    <DashboardHeader />
 
-                <section
-                    ref={contentRef}
-                    style={{
-                        display: "flex",
-                        flex: 1,
-                        width: "100%",
-                        minHeight: 0,
-                        position: "relative",
-                        overflow: "hidden",
-                    }}
-                >
-                    {!isDataOpen && (
-                        <button
-                            onClick={() => togglePanel("data")}
-                            aria-label="Veri panelini ac"
-                            style={{
-                                position: "absolute",
-                                left: 4,
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                                width: 28,
-                                height: 48,
-                                zIndex: 2,
-                            }}
-                        >
-                            {">"}
-                        </button>
-                    )}
+                    <section
+                        ref={contentRef}
+                        className="relative flex min-h-0 w-full flex-1 overflow-hidden"
+                    >
+                        {!isMobile && !isDataOpen && (
+                            <button
+                                onClick={() => togglePanel("data")}
+                                aria-label="Veri panelini ac"
+                                className="absolute left-1 top-1/2 z-[1400] h-12 w-7 -translate-y-1/2 rounded-md border border-slate-700 bg-slate-900/95 text-slate-200 shadow-lg"
+                            >
+                                {">"}
+                            </button>
+                        )}
 
-                    {isDataOpen && (
-                        <div
-                            style={{
-                                flex: isMapOpen
-                                    ? `0 0 ${effectiveSplit}%`
-                                    : "1 1 auto",
-                                minWidth: isMapOpen ? MIN_PANEL_WIDTH : 0,
-                                height: "100%",
-                                overflow: "hidden",
-                                paddingRight: isMapOpen ? 4 : 0,
-                            }}
-                        >
-                            <DataPanel onClose={() => togglePanel("data")} />
-                        </div>
-                    )}
+                        {shouldShowData && (
+                            <div
+                                style={
+                                    isMobile
+                                        ? {
+                                              flex: "1 1 auto",
+                                              minWidth: 0,
+                                              height: "100%",
+                                              overflow: "hidden",
+                                          }
+                                        : {
+                                              flex: isMapOpen
+                                                  ? `0 0 ${effectiveSplit}%`
+                                                  : "1 1 auto",
+                                              minWidth: isMapOpen
+                                                  ? MIN_PANEL_WIDTH
+                                                  : 0,
+                                              height: "100%",
+                                              overflow: "hidden",
+                                              paddingRight: isMapOpen ? 4 : 0,
+                                          }
+                                }
+                            >
+                                <DataPanel
+                                    onClose={() => {
+                                        if (isMobile) {
+                                            setMobileActivePanel("map");
+                                        } else {
+                                            togglePanel("data");
+                                        }
+                                    }}
+                                />
+                            </div>
+                        )}
 
-                    {isDataOpen && isMapOpen && (
-                        <div
-                            onMouseDown={() => setIsResizing(true)}
-                            role="separator"
-                            aria-label="Panel ayirici"
-                            style={{
-                                width: 8,
-                                cursor: "col-resize",
-                                background: isResizing ? "#d7d7d7" : "#ececec",
-                                borderRadius: 6,
-                                margin: "0 2px",
-                                flex: "0 0 8px",
-                            }}
-                        />
-                    )}
+                        {!isMobile && isDataOpen && isMapOpen && (
+                            <div
+                                onMouseDown={() => setIsResizing(true)}
+                                role="separator"
+                                aria-label="Panel ayirici"
+                                className={`mx-0.5 h-full w-2 flex-none rounded-md ${
+                                    isResizing ? "bg-slate-500" : "bg-slate-700"
+                                } cursor-col-resize`}
+                            />
+                        )}
 
-                    {isMapOpen && (
-                        <div
-                            style={{
-                                flex: isDataOpen
-                                    ? `0 0 ${100 - effectiveSplit}%`
-                                    : "1 1 auto",
-                                minWidth: isDataOpen ? MIN_PANEL_WIDTH : 0,
-                                height: "100%",
-                                overflow: "hidden",
-                                paddingLeft: isDataOpen ? 4 : 0,
-                            }}
-                        >
-                            <MapPanel onClose={() => togglePanel("map")} />
-                        </div>
-                    )}
+                        {shouldShowMap && (
+                            <div
+                                style={
+                                    isMobile
+                                        ? {
+                                              flex: "1 1 auto",
+                                              minWidth: 0,
+                                              height: "100%",
+                                              overflow: "hidden",
+                                          }
+                                        : {
+                                              flex: isDataOpen
+                                                  ? `0 0 ${100 - effectiveSplit}%`
+                                                  : "1 1 auto",
+                                              minWidth: isDataOpen
+                                                  ? MIN_PANEL_WIDTH
+                                                  : 0,
+                                              height: "100%",
+                                              overflow: "hidden",
+                                              paddingLeft: isDataOpen ? 4 : 0,
+                                          }
+                                }
+                            >
+                                <MapPanel
+                                    onClose={() => {
+                                        if (isMobile) {
+                                            setMobileActivePanel("data");
+                                        } else {
+                                            togglePanel("map");
+                                        }
+                                    }}
+                                />
+                            </div>
+                        )}
 
-                    {!isMapOpen && (
-                        <button
-                            onClick={() => togglePanel("map")}
-                            aria-label="Harita panelini ac"
-                            style={{
-                                position: "absolute",
-                                right: 4,
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                                width: 28,
-                                height: 48,
-                                zIndex: 2,
-                            }}
-                        >
-                            {"<"}
-                        </button>
-                    )}
-                </section>
+                        {!isMobile && !isMapOpen && (
+                            <button
+                                onClick={() => togglePanel("map")}
+                                aria-label="Harita panelini ac"
+                                className="absolute right-1 top-1/2 z-[1400] h-12 w-7 -translate-y-1/2 rounded-md border border-slate-700 bg-slate-900/95 text-slate-200 shadow-lg"
+                            >
+                                {"<"}
+                            </button>
+                        )}
 
-                <EventDetailModal />
+                        {isMobile && (
+                            <button
+                                onClick={switchMobilePanel}
+                                aria-label="Panel değiştir"
+                                className="absolute right-2 top-1/2 z-30 h-14 w-8 -translate-y-1/2 rounded-full border border-slate-700 bg-slate-900/95 text-sm font-semibold text-slate-100 shadow-lg"
+                            >
+                                {mobileActivePanel === "data" ? ">" : "<"}
+                            </button>
+                        )}
+                    </section>
+
+                    <EventDetailModal />
+                </div>
             </main>
         </InvestigationProvider>
     );
