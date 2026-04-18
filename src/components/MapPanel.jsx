@@ -153,7 +153,7 @@ export default function MapPanel({ onClose }) {
                                 }}
                             >
                                 <Popup>
-                                    <div className="min-w-[220px]">
+                                    <div className="min-w-220px">
                                         <div className="mb-1.5 text-xs text-slate-500">
                                             🕒 {event.timestampString || "-"}
                                         </div>

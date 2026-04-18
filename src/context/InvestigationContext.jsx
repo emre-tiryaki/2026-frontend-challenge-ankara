@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { InvestigationContext } from "./investigationContextObject";
+import { fileStorageService } from "../services/fileStorageService";
 
 const EVENT_TYPE_OPTIONS = [
     { value: "checkin", label: "📍 Check-in'ler" },
@@ -81,6 +82,10 @@ export function InvestigationProvider({ initialEvents, children }) {
     const [timeRangeState, setTimeRangeState] = useState(null);
     const [focusedEventKey, setFocusedEventKey] = useState(null);
     const [modalEventKey, setModalEventKey] = useState(null);
+    const [allFiles, setAllFiles] = useState(() =>
+        fileStorageService.getAllFiles(),
+    );
+    const [openCanvasFileId, setOpenCanvasFileId] = useState(null);
 
     const selectedPeople = useMemo(() => {
         if (selectedPeopleState === null) return peopleOptions;
@@ -199,6 +204,71 @@ export function InvestigationProvider({ initialEvents, children }) {
         setModalEventKey(null);
     };
 
+    const currentFile = useMemo(() => {
+        if (!openCanvasFileId) return null;
+        return allFiles.find((f) => f.id === openCanvasFileId) || null;
+    }, [allFiles, openCanvasFileId]);
+
+    const createNewFile = useCallback((name) => {
+        const newFile = fileStorageService.createFile(name);
+        setAllFiles(fileStorageService.getAllFiles());
+        return newFile;
+    }, []);
+
+    const renameFile = useCallback((fileId, newName) => {
+        fileStorageService.renameFile(fileId, newName);
+        setAllFiles(fileStorageService.getAllFiles());
+    }, []);
+
+    const deleteFile = useCallback(
+        (fileId) => {
+            fileStorageService.deleteFile(fileId);
+            setAllFiles(fileStorageService.getAllFiles());
+            if (openCanvasFileId === fileId) {
+                setOpenCanvasFileId(null);
+            }
+        },
+        [openCanvasFileId],
+    );
+
+    const addEvidenceToFile = useCallback((fileId, eventId, eventType) => {
+        fileStorageService.addEvidenceToFile(fileId, eventId, eventType);
+        setAllFiles(fileStorageService.getAllFiles());
+    }, []);
+
+    const removeEvidenceFromFile = useCallback((fileId, evidenceKey) => {
+        fileStorageService.removeEvidenceFromFile(fileId, evidenceKey);
+        setAllFiles(fileStorageService.getAllFiles());
+    }, []);
+
+    const updateEvidencePosition = useCallback((fileId, evidenceKey, x, y) => {
+        fileStorageService.updateEvidencePosition(fileId, evidenceKey, x, y);
+        setAllFiles(fileStorageService.getAllFiles());
+    }, []);
+
+    const addConnection = useCallback((fileId, source, target, label = "") => {
+        fileStorageService.addConnection(fileId, source, target, label);
+        setAllFiles(fileStorageService.getAllFiles());
+    }, []);
+
+    const deleteConnection = useCallback((fileId, connectionId) => {
+        fileStorageService.deleteConnection(fileId, connectionId);
+        setAllFiles(fileStorageService.getAllFiles());
+    }, []);
+
+    const updateConnectionLabel = useCallback((fileId, connectionId, label) => {
+        fileStorageService.updateConnectionLabel(fileId, connectionId, label);
+        setAllFiles(fileStorageService.getAllFiles());
+    }, []);
+
+    const openCanvas = useCallback((fileId) => {
+        setOpenCanvasFileId(fileId);
+    }, []);
+
+    const closeCanvas = useCallback(() => {
+        setOpenCanvasFileId(null);
+    }, []);
+
     const value = {
         caseTitle: "Ankara 18 Nisan: Case #2610",
         allEvents,
@@ -219,6 +289,20 @@ export function InvestigationProvider({ initialEvents, children }) {
         openEventDetails,
         closeEventDetails,
         getEventKey,
+        allFiles,
+        currentFile,
+        openCanvasFileId,
+        createNewFile,
+        renameFile,
+        deleteFile,
+        addEvidenceToFile,
+        removeEvidenceFromFile,
+        updateEvidencePosition,
+        addConnection,
+        deleteConnection,
+        updateConnectionLabel,
+        openCanvas,
+        closeCanvas,
     };
 
     return (

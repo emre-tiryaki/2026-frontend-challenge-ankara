@@ -92,7 +92,7 @@ export default function DashboardHeader() {
     const showFilters = isMobileFiltersOpen;
 
     return (
-        <header className="relative z-[1200] rounded-2xl border border-slate-800 bg-slate-900/90 p-3 shadow-2xl shadow-black/20 backdrop-blur md:p-4">
+        <header className="relative z-1200 rounded-2xl border border-slate-800 bg-slate-900/90 p-3 shadow-2xl shadow-black/20 backdrop-blur md:p-4">
             <div className="flex items-center gap-3">
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                     <div className="grid h-10 w-10 place-items-center rounded-xl border border-slate-700 bg-slate-800 text-xl">
@@ -143,7 +143,7 @@ export default function DashboardHeader() {
                     </button>
 
                     {openMenu === "people" && (
-                        <div className="absolute left-0 top-11 z-[1300] max-h-72 w-full overflow-auto rounded-xl border border-slate-700 bg-slate-900 p-3 shadow-xl shadow-black/40">
+                        <div className="absolute left-0 top-11 z-1300 max-h-72 w-full overflow-auto rounded-xl border border-slate-700 bg-slate-900 p-3 shadow-xl shadow-black/40">
                             <label className="mb-2 block text-sm text-slate-200">
                                 <input
                                     type="checkbox"
@@ -194,7 +194,7 @@ export default function DashboardHeader() {
                     </button>
 
                     {openMenu === "types" && (
-                        <div className="absolute left-0 top-11 z-[1300] max-h-72 w-full overflow-auto rounded-xl border border-slate-700 bg-slate-900 p-3 shadow-xl shadow-black/40">
+                        <div className="absolute left-0 top-11 z-1300 max-h-72 w-full overflow-auto rounded-xl border border-slate-700 bg-slate-900 p-3 shadow-xl shadow-black/40">
                             <label className="mb-2 block text-sm text-slate-200">
                                 <input
                                     type="checkbox"

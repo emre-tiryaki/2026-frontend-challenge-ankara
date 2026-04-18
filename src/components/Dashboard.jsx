@@ -3,6 +3,8 @@ import DashboardHeader from "./DashboardHeader";
 import DataPanel from "./DataPanel";
 import MapPanel from "./MapPanel";
 import EventDetailModal from "./EventDetailModal";
+import FilesDrawer from "./FilesDrawer";
+import CanvasPanel from "./CanvasPanel";
 import { storageService } from "../services/storageService";
 import { InvestigationProvider } from "../context/InvestigationContext";
 
@@ -177,7 +179,7 @@ export default function Dashboard({ timeline }) {
                             <button
                                 onClick={() => togglePanel("data")}
                                 aria-label="Veri panelini ac"
-                                className="absolute left-1 top-1/2 z-[1400] h-12 w-7 -translate-y-1/2 rounded-md border border-slate-700 bg-slate-900/95 text-slate-200 shadow-lg"
+                                className="absolute left-1 top-1/2 z-1400 h-12 w-7 -translate-y-1/2 rounded-md border border-slate-700 bg-slate-900/95 text-slate-200 shadow-lg"
                             >
                                 {">"}
                             </button>
@@ -268,7 +270,7 @@ export default function Dashboard({ timeline }) {
                             <button
                                 onClick={() => togglePanel("map")}
                                 aria-label="Harita panelini ac"
-                                className="absolute right-1 top-1/2 z-[1400] h-12 w-7 -translate-y-1/2 rounded-md border border-slate-700 bg-slate-900/95 text-slate-200 shadow-lg"
+                                className="absolute right-1 top-1/2 z-1400 h-12 w-7 -translate-y-1/2 rounded-md border border-slate-700 bg-slate-900/95 text-slate-200 shadow-lg"
                             >
                                 {"<"}
                             </button>
@@ -286,6 +288,8 @@ export default function Dashboard({ timeline }) {
                     </section>
 
                     <EventDetailModal />
+                    <FilesDrawer />
+                    <CanvasPanel />
                 </div>
             </main>
         </InvestigationProvider>

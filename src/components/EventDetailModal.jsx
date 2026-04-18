@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useInvestigation } from "../context/useInvestigation";
 
@@ -121,7 +121,32 @@ function renderEventDetail(event) {
 }
 
 export default function EventDetailModal() {
-    const { modalEvent, closeEventDetails } = useInvestigation();
+    const {
+        modalEvent,
+        closeEventDetails,
+        allFiles,
+        createNewFile,
+        addEvidenceToFile,
+    } = useInvestigation();
+    const [showFileDropdown, setShowFileDropdown] = useState(false);
+
+    const handleAddToFile = (fileId) => {
+        if (modalEvent && fileId) {
+            addEvidenceToFile(fileId, modalEvent.id, modalEvent.type);
+            setShowFileDropdown(false);
+        }
+    };
+
+    const handleCreateNewFileAndAdd = () => {
+        const name = prompt("Yeni dosya adı:");
+        if (name && name.trim()) {
+            const newFile = createNewFile(name.trim());
+            if (newFile && modalEvent) {
+                addEvidenceToFile(newFile.id, modalEvent.id, modalEvent.type);
+                setShowFileDropdown(false);
+            }
+        }
+    };
 
     const modalMeta = useMemo(() => {
         if (!modalEvent) return null;
@@ -135,7 +160,7 @@ export default function EventDetailModal() {
         <div
             role="dialog"
             aria-modal="true"
-            className="fixed inset-0 z-[5000] grid place-items-center bg-slate-950/70 p-4"
+            className="fixed inset-0 z-5000 grid place-items-center bg-slate-950/70 p-4"
             onClick={closeEventDetails}
         >
             <div
@@ -174,6 +199,54 @@ export default function EventDetailModal() {
                         <strong>Konum:</strong> {modalEvent.location || "-"}
                     </p>
                     {renderEventDetail(modalEvent)}
+                </div>
+
+                {/* Add to File Button & Dropdown */}
+                <div className="relative border-t border-slate-800 p-4">
+                    <button
+                        type="button"
+                        onClick={() => setShowFileDropdown(!showFileDropdown)}
+                        className="w-full rounded-lg border border-slate-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+                    >
+                        📂 Dosyaya Ekle
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {showFileDropdown && (
+                        <div className="absolute right-4 top-16 z-5001 max-h-64 w-max min-w-200px overflow-y-auto rounded-lg border border-slate-700 bg-slate-900 shadow-xl">
+                            {/* Existing Files */}
+                            {allFiles.length > 0 && (
+                                <>
+                                    <div className="border-b border-slate-700 px-3 py-2 text-xs font-semibold text-slate-400">
+                                        Var olan dosyalar
+                                    </div>
+                                    {allFiles.map((file) => (
+                                        <button
+                                            key={file.id}
+                                            type="button"
+                                            onClick={() =>
+                                                handleAddToFile(file.id)
+                                            }
+                                            className="block w-full px-4 py-2 text-left text-sm text-slate-200 hover:bg-slate-800 transition-colors"
+                                        >
+                                            📁 {file.name}
+                                        </button>
+                                    ))}
+                                </>
+                            )}
+
+                            {/* Create New File */}
+                            <div className="border-t border-slate-700">
+                                <button
+                                    type="button"
+                                    onClick={handleCreateNewFileAndAdd}
+                                    className="block w-full border-t border-slate-700 px-4 py-2 text-left text-sm font-medium text-blue-400 hover:bg-slate-800 transition-colors"
+                                >
+                                    + Yeni Dosya Oluştur
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>,
