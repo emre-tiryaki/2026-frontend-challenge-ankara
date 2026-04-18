@@ -110,7 +110,7 @@ export default function CanvasPanel() {
     if (!currentFile) return null;
 
     return (
-        <div className="fixed inset-0 z-[4000] flex flex-col bg-slate-950">
+        <div className="fixed inset-0 z-4000 flex flex-col bg-slate-950">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900/90 px-6 py-4 shadow-lg">
                 <div className="flex items-center gap-4">
