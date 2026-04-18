@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+html,
+body,
+#root {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    overflow: hidden;
+}
+
+* {
+    box-sizing: border-box;
+}

@@ -2,10 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { apiService } from "./services/apiService";
 import { combineAndSortAllData } from "./services/dataParser";
 import Dashboard from "./components/Dashboard";
+import { storageService } from "./services/storageService";
 
 function App() {
-    const [timeline, setTimeline] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const cachedTimeline = storageService.getTimeline();
+    const [timeline, setTimeline] = useState(cachedTimeline);
+    const [loading, setLoading] = useState(cachedTimeline.length === 0);
     const [error, setError] = useState(null);
 
     const fetchTimeline = useCallback(async () => {
@@ -55,11 +57,13 @@ function App() {
                 setTimeline(sortedEvents);
             } catch (err) {
                 if (cancelled) return;
-                setError(
-                    err instanceof Error
-                        ? err.message
-                        : "Beklenmeyen bir hata oluştu.",
-                );
+                if (cachedTimeline.length === 0) {
+                    setError(
+                        err instanceof Error
+                            ? err.message
+                            : "Beklenmeyen bir hata oluştu.",
+                    );
+                }
             } finally {
                 if (!cancelled) {
                     setLoading(false);
@@ -72,7 +76,11 @@ function App() {
         return () => {
             cancelled = true;
         };
-    }, [fetchTimeline]);
+    }, [fetchTimeline, cachedTimeline.length]);
+
+    useEffect(() => {
+        storageService.setTimeline(timeline);
+    }, [timeline]);
 
     if (loading) {
         return (
